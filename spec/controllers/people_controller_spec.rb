@@ -59,20 +59,20 @@ describe PeopleController do
     describe "eFZ Einsichtnahme Button" do
       it "does not render button if not permitted" do
         get :show, params: {group_id: group.id, id: leader.id}
-        expect(dom).not_to have_link "eFZ Einsichtnahme erfassen"
+        expect(dom).not_to have_link "Führungszeugnis erfassen"
       end
 
       it "does render button if permitted" do
         Fabricate(Group::Stamm::ErfassungFuehrungszeugnis.sti_name, group: groups(:adler), person: leader)
         get :show, params: {group_id: group.id, id: leader.id}
-        expect(dom).to have_link "eFZ Einsichtnahme erfassen",
+        expect(dom).to have_link "Führungszeugnis erfassen",
           href: new_group_person_efz_einsichtnahme_path(group, leader)
       end
     end
 
     describe "latest eFZ Einsichtnahme info" do
       let(:einsichtnehmer) { people(:stammesverwaltung) }
-      let(:latest_efz_issued_on) { dom.find("dt.muted", text: "eFZ Ausstellungsdatum").send(:parent) }
+      let(:latest_efz_issued_on) { dom.find("dt.muted", text: "eFZ-Ausstellungsdatum").send(:parent) }
       let(:latest_efz_einsicht_on) { dom.find("dt.muted", text: "eFZ Einsichtnahme").send(:parent) }
 
       it "shows nothing when not present" do
