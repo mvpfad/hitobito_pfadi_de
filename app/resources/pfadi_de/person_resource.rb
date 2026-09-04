@@ -22,6 +22,7 @@ module PfadiDe::PersonResource
     attribute :bank_name, :string, readable: :show_details_on_person?
     attribute :payment_method, :string, readable: :show_details_on_person?
     attribute :consent_data_retention, :boolean, readable: :show_details_on_person?
+    attribute :latest_efz_issued_on, :date, writable: false, readable: :show_details_on_person?
 
     # rubocop:disable Rails/RedundantForeignKey
     belongs_to :leading_layer, resource: GroupResource, writable: false,

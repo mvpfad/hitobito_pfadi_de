@@ -23,7 +23,8 @@ describe PersonResource, type: :resource do
         :payment_method,
         :consent_data_retention,
         :entry_date,
-        :exit_date
+        :exit_date,
+        :latest_efz_issued_on
       ]
     end
 

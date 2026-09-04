@@ -85,6 +85,10 @@ module HitobitoPfadiDe
       TableDisplay.register_column(Person,
         TableDisplays::People::LeadingLayerColumn,
         :leading_layer)
+
+      TableDisplay.register_column(Person,
+        TableDisplays::ShowDetailsColumn,
+        :latest_efz_issued_on)
     end
 
     initializer "pfadi_de.add_settings" do |_app|
