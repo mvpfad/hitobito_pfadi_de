@@ -34,6 +34,19 @@ describe PeopleController do
     end
   end
 
+  describe ".sort_mappings_with_indifferent_access" do
+    it "maps entry_date and exit_date to their cached columns" do
+      mappings = PeopleController.sort_mappings_with_indifferent_access
+
+      expect(mappings["entry_date"]).to eq "people.last_entry_date_with_fee_kind"
+      expect(mappings["exit_date"]).to eq "people.last_exit_date_with_fee_kind"
+    end
+
+    it "still includes the core roles mapping" do
+      expect(PeopleController.sort_mappings_with_indifferent_access["roles"]).to be_a(Hash)
+    end
+  end
+
   describe "GET#show" do
     render_views
     let(:dom) { Capybara::Node::Simple.new(response.body) }

@@ -18,6 +18,9 @@ describe TableDisplays::People::MembershipDateColumn, type: :helper do
 
   before do
     allow_any_instance_of(ActionView::Base).to receive(:parent).and_return(group)
+    allow_any_instance_of(ActionView::Base).to receive(:params).and_return(
+      ActionController::Parameters.new(controller: "people", action: "index", group_id: group.id.to_s)
+    )
   end
 
   context "entry_date" do
@@ -37,6 +40,18 @@ describe TableDisplays::People::MembershipDateColumn, type: :helper do
       value: "",
       permission: :show_details
     }
+  end
+
+  describe "#sort_by" do
+    subject(:column) { described_class.new(ability, table: table, model_class: Person) }
+
+    it "sorts entry_date by the cached last_entry_date_with_fee_kind column" do
+      expect(column.sort_by(:entry_date)).to eq "people.last_entry_date_with_fee_kind"
+    end
+
+    it "sorts exit_date by the cached last_exit_date_with_fee_kind column" do
+      expect(column.sort_by(:exit_date)).to eq "people.last_exit_date_with_fee_kind"
+    end
   end
 
   describe "visibility" do

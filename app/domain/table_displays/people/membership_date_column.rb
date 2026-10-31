@@ -8,10 +8,16 @@
 module TableDisplays
   module People
     class MembershipDateColumn < ShowDetailsColumn
+      SORT_COLUMNS = {
+        entry_date: :last_entry_date_with_fee_kind,
+        exit_date: :last_exit_date_with_fee_kind
+      }.freeze
+
       def required_model_attrs(_attr) = []
 
-      # not sortable
-      def sort_by(_attr) = nil
+      def sort_by(attr)
+        resolve_database_column(SORT_COLUMNS.fetch(attr.to_sym))
+      end
     end
   end
 end

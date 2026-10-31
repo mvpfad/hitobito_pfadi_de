@@ -8,6 +8,15 @@
 module PfadiDe::PeopleController
   extend ActiveSupport::Concern
 
+  class_methods do
+    def sort_mappings_with_indifferent_access
+      super.merge(
+        entry_date: "people.last_entry_date_with_fee_kind",
+        exit_date: "people.last_exit_date_with_fee_kind"
+      ).with_indifferent_access
+    end
+  end
+
   def permitted_attrs
     attrs = super + PfadiDe::Contactable::BANK_ACCOUNT_ATTRS +
       [:pronoun, :consent_data_retention]

@@ -28,6 +28,7 @@ module PfadiDe::Person
     Person::PUBLIC_ATTRS.push(:pronoun, :bank_account_owner, :iban, :bic, :bank_name)
 
     Person::INTERNAL_ATTRS.push(:last_entry_date_with_fee_kind,
+      :last_exit_date_with_fee_kind,
       :should_recalculate_last_entry_date_with_fee_kind,
       :latest_efz_issued_on)
     Person::INTERNAL_ATTRS.concat(MEMBERSHIP_APPLICATION_ATTRS)
@@ -36,6 +37,7 @@ module PfadiDe::Person
 
     paper_trail_options[:skip].concat([
       "last_entry_date_with_fee_kind",
+      "last_exit_date_with_fee_kind",
       "should_recalculate_last_entry_date_with_fee_kind",
       "latest_efz_issued_on"
     ])
