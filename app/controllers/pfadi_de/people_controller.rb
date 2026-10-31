@@ -8,8 +8,18 @@
 module PfadiDe::PeopleController
   extend ActiveSupport::Concern
 
+  prepended do
+    before_update :clear_incomplete_legacy_data
+  end
+
   def permitted_attrs
     super + PfadiDe::Contactable::BANK_ACCOUNT_ATTRS +
       [:pronoun, :consent_data_retention]
+  end
+
+  private
+
+  def clear_incomplete_legacy_data
+    entry.incomplete_legacy_data = false
   end
 end
