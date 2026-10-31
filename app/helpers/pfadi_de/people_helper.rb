@@ -8,7 +8,7 @@
 module PfadiDe
   module PeopleHelper
     def restricted_attr?(person, attr)
-      person.is_a?(Person) && person.self_or_managed_by?(current_user) &&
+      person.is_a?(Person) && person.self_or_managed_by_current_person? &&
         PfadiDe::Person::SELF_OR_MANAGED_RESTRICTED_ATTRS.include?(attr.to_s)
     end
   end

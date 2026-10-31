@@ -11,7 +11,7 @@
 # housenumber stays optional so that addresses without one (c/o, Postfach) can
 # still be entered. country stays optional as well, a blank value falls back to
 # Countries.default.
-module PfadiDe::RequiredSitzanschrift
+module PfadiDe::RequiredAddress
   extend ActiveSupport::Concern
 
   included do

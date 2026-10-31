@@ -21,7 +21,7 @@ module PfadiDe::PersonResource
     attribute :iban, :string, readable: :show_full_on_person?
     attribute :bic, :string, readable: :show_full_on_person?
     attribute :bank_name, :string, readable: :show_full_on_person?
-    attribute :consent_data_retention, :boolean, readable: :show_details_on_person?
+    attribute :consent_data_retention, :boolean, readable: :show_full_on_person?
 
     # rubocop:disable Rails/RedundantForeignKey
     belongs_to :leading_layer, resource: GroupResource, writable: false,
@@ -45,9 +45,10 @@ module PfadiDe::PersonResource
   def authorize_update(model)
     super
 
+    return unless model.self_or_managed_by_current_person?
+
     restricted_changed = model.changed_attribute_names_to_save &
       PfadiDe::Person::SELF_OR_MANAGED_RESTRICTED_ATTRS
-    raise CanCan::AccessDenied if restricted_changed.present? &&
-      model.self_or_managed_by?(current_ability.user)
+    raise CanCan::AccessDenied if restricted_changed.present?
   end
 end

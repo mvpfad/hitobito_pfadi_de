@@ -7,9 +7,7 @@
 
 require "spec_helper"
 
-# Registered as TableDisplays::ShowDetailsColumn for :consent_data_retention in
-# HitobitoPfadiDe::Wagon, not a dedicated column class.
-describe TableDisplays::ShowDetailsColumn, type: :helper do
+describe TableDisplays::ShowFullColumn, type: :helper do
   include UtilityHelper
   include FormatHelper
 
@@ -31,6 +29,6 @@ describe TableDisplays::ShowDetailsColumn, type: :helper do
     header: "Einwilligung Weiternutzung Kontaktdaten nach Austritt",
     value: "ja",
     export_value: "true",
-    permission: :show_details
+    permission: :show_full
   }
 end

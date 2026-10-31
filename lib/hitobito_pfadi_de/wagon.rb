@@ -120,15 +120,11 @@ module HitobitoPfadiDe
 
       TableDisplay.register_column(Person,
         TableDisplays::ShowDetailsColumn,
-        :consent_data_retention)
+        :latest_efz_issued_on)
 
       TableDisplay.register_column(Person,
         TableDisplays::ShowFullColumn,
-        PfadiDe::Contactable::BANK_ACCOUNT_ATTRS)
-
-      TableDisplay.register_column(Person,
-        TableDisplays::ShowDetailsColumn,
-        :latest_efz_issued_on)
+        PfadiDe::Contactable::BANK_ACCOUNT_ATTRS + [:consent_data_retention])
 
       # contact account categories (#4359): the pfadi_de-specific categories
       # listed in the issue (github.com/hitobito/hitobito_pfadi_de/issues/102),

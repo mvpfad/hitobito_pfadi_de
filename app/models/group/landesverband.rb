@@ -7,7 +7,7 @@
 
 class Group::Landesverband < ::Group
   include PfadiDe::LayerGroup
-  include PfadiDe::RequiredSitzanschrift
+  include PfadiDe::RequiredAddress
 
   self.layer = true
   self.event_types = [Event, Event::Course]

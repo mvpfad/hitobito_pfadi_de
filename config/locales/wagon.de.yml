@@ -1505,9 +1505,9 @@ de:
         updated_at: Geändert
       event/guest:
         genders:
-          _nil: Unbekannt
+          _nil: nicht angegeben
           d: divers
-          n: ohne Angabe
+          n: keine Angabe
       person:
         address: Anschrift
         bank_account_owner: Kontoinhaber*in

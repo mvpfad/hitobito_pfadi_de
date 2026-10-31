@@ -5,11 +5,6 @@
 #  or later. See the COPYING file at the top-level directory or at
 #  https://github.com/hitobito/hitobito_pfadi_de.
 
-# Sitzanschrift and Stammtyp are Pflichtfelder on Bundesebene, Landesverband and
-# Stamm, so specs fabricating one of those have to supply them. The core group
-# fabricator only sets a name.
-#
-# See PfadiDe::RequiredSitzanschrift and Group::Stamm.
 module GroupPflichtfelder
   SITZANSCHRIFT = {
     street: "Hauptstraße",

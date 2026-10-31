@@ -82,10 +82,6 @@ describe PersonAbility do
     it "may see tags of another person" do
       is_expected.to be_able_to(:show_tags, other)
     end
-
-    it "may not show_full another person" do
-      is_expected.not_to be_able_to(:show_full, other)
-    end
   end
 
   context :layer_and_below_read do

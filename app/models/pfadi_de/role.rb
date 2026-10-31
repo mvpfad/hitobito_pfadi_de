@@ -47,8 +47,6 @@ module PfadiDe::Role
 
     before_validation :ensure_fee_kind
 
-    # A beitragspflichtige Rolle may only be granted to a person whose
-    # Geburtsdatum and Anschrift are known.
     validate :assert_person_data_complete, on: :create, if: :fee_kind_type?
 
     after_commit :mark_person_for_entry_date_recalculation

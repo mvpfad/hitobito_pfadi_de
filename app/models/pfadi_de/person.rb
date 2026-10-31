@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#  Copyright (c) 2025, BdP and DPSG. This file is part of
+#  Copyright (c) 2025-2026, BdP and DPSG. This file is part of
 #  hitobito_pfadi_de and licensed under the Affero General Public License version 3
 #  or later. See the COPYING file at the top-level directory or at
 #  https://github.com/hitobito/hitobito_pfadi_de.
@@ -56,7 +56,8 @@ module PfadiDe::Person
     normalizes :bank_account_owner, with: ->(value) { value.squish }
 
     validates :iban, iban: true, on: :update, allow_blank: true
-    validates(*MEMBER_REQUIRED_ATTRS, presence: true, if: :is_member?)
+    validates(*MEMBER_REQUIRED_ATTRS, presence: true,
+      if: :is_or_will_be_member?)
 
     scope :tentative_membership, -> do
       where(arel_table[:last_entry_date_with_fee_kind].gt(tentative_membership_cutoff))
@@ -87,16 +88,20 @@ module PfadiDe::Person
     active_sepa_mandate_for(group)&.reference.to_s
   end
 
-  def is_member?
-    roles.any?(&:fee_kind_type?)
+  def is_or_will_be_member?
+    roles_unscoped.active_and_future.any?(&:fee_kind_type?)
   end
 
-  def self_or_managed_by?(user)
-    persisted? && (id == user.id || managers.exists?(id: user.id))
+  def self_or_managed_by_current_person?
+    return @self_or_managed_by_current_person if defined?(@self_or_managed_by_current_person)
+
+    current_person = Auth.current_person
+    @self_or_managed_by_current_person = current_person.present? &&
+      persisted? && (id == current_person.id || managers.exists?(id: current_person.id))
   end
 
   def mark_as_required?(attr)
-    MEMBER_REQUIRED_ATTRS.include?(attr.to_sym) && is_member?
+    MEMBER_REQUIRED_ATTRS.include?(attr.to_sym) && is_or_will_be_member?
   end
 
   def entry_date
