@@ -60,6 +60,24 @@ describe FeeKindResource, type: :resource do
       expect(jsonapi_data[0].restricted).to be true
     end
 
+    context "as Landesmitgliederverwaltung" do
+      let(:person) do
+        Fabricate(:"Group::Landesverband::Landesmitgliederverwaltung",
+          group: groups(:baden_wuerttemberg)).person
+      end
+
+      it "serializes restricted of sideloaded parents" do
+        fee_kinds(:top_fee_kind).update!(restricted: true)
+        params[:include] = "parent"
+
+        render
+
+        parent = d[0].sideload(:parent)
+        expect(parent.id).to eq(fee_kinds(:baden_wuerttemberg_kind).id)
+        expect(parent.restricted).to be true
+      end
+    end
+
     context "with a restricted fee kind of the Landesverband" do
       around do |example|
         Group::Landesverband.fee_kind_restrictable = true

@@ -69,7 +69,7 @@ class FeeKindChooser
     result = candidates.joins(:layer).where(groups: {lft: lft_of_lowest_non_empty_layer})
 
     # Apply restricted filter
-    @allow_restricted ? result : filter_restricted(result)
+    @allow_restricted ? result : result.not_restricted
   end
 
   # Builds a JOIN condition to connect fee_kinds to their root fee_kinds using nested set
@@ -93,18 +93,5 @@ class FeeKindChooser
     # Build the JOIN and convert to format ActiveRecord understands
     # .join() creates the JOIN, .on() adds the condition, .join_sources extracts for AR
     fee_kinds.join(root_alias).on(join_condition).join_sources
-  end
-
-  def filter_restricted(relation)
-    fee_kinds = FeeKind.arel_table
-    ancestor = fee_kinds.alias("restricted_ancestors")
-
-    restricted_ancestor = Arel::SelectManager.new(ancestor).project(1).where(
-      ancestor[:lft].lteq(fee_kinds[:lft])
-        .and(ancestor[:rgt].gteq(fee_kinds[:rgt]))
-        .and(ancestor[:restricted].eq(true))
-    )
-
-    relation.where(restricted_ancestor.exists.not)
   end
 end

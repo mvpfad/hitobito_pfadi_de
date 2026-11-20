@@ -94,8 +94,8 @@ describe FeeKind do
       expect(fee_kind).not_to be_valid
     end
 
-    it "validates absence of restricted" do
-      fee_kind.restricted = false
+    it "validates absence of restricted true" do
+      fee_kind.restricted = true
       expect(fee_kind).not_to be_valid
     end
 
@@ -180,6 +180,30 @@ describe FeeKind do
     it "validates absence of restricted true" do
       fee_kind.restricted = true
       expect(fee_kind).not_to be_valid
+    end
+
+    it "accepts restricted false" do
+      fee_kind.restricted = false
+      expect(fee_kind).to be_valid
+    end
+  end
+
+  context "restricted scopes" do
+    let(:top_fee_kind) { fee_kinds(:top_fee_kind) }
+    let(:bawue_fee_kind) { fee_kinds(:baden_wuerttemberg_kind) }
+
+    it "include fee kinds without restricted ancestors" do
+      expect(FeeKind.not_restricted).to include(top_fee_kind, bawue_fee_kind)
+      expect(FeeKind.with_effectively_restricted.map(&:effectively_restricted).uniq)
+        .to eq [false]
+    end
+
+    it "consider restricted ancestors" do
+      top_fee_kind.update!(restricted: true)
+
+      expect(FeeKind.not_restricted).not_to include(top_fee_kind, bawue_fee_kind)
+      expect(FeeKind.with_effectively_restricted.find(bawue_fee_kind.id).effectively_restricted)
+        .to be true
     end
   end
 
