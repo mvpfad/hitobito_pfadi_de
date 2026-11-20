@@ -116,6 +116,76 @@ describe FeeKind do
     end
   end
 
+  context "restrictable layer below top layer" do
+    let(:fee_kind) { fee_kinds(:baden_wuerttemberg_kind) }
+
+    around do |example|
+      Group::Landesverband.fee_kind_restrictable = true
+      example.run
+    ensure
+      Group::Landesverband.fee_kind_restrictable = false
+    end
+
+    it "is restrictable" do
+      expect(fee_kind).to be_restrictable_below_top_layer
+    end
+
+    it "accepts restricted true" do
+      fee_kind.restricted = true
+      expect(fee_kind).to be_valid
+    end
+
+    it "accepts restricted nil" do
+      fee_kind.restricted = nil
+      expect(fee_kind).to be_valid
+    end
+
+    it "normalizes restricted false to nil" do
+      fee_kind.update!(restricted: false)
+      expect(fee_kind.reload.restricted).to be_nil
+    end
+
+    it "still validates absence of role_type" do
+      fee_kind.role_type = roles(:member).type
+      expect(fee_kind).not_to be_valid
+    end
+
+    it "#restricted? returns own restricted value" do
+      expect(fee_kind.restricted?).to be false
+      fee_kind.update!(restricted: true)
+      expect(fee_kind.restricted?).to be true
+    end
+
+    it "#restricted? is inherited by fee kinds below" do
+      stamm_fee_kind = Fabricate(:fee_kind, parent: fee_kind, layer: groups(:adler))
+      expect(stamm_fee_kind.restricted?).to be false
+
+      fee_kind.update!(restricted: true)
+      expect(stamm_fee_kind.reload.restricted?).to be true
+    end
+
+    it "does not allow restricted on layers of other types" do
+      stamm_fee_kind = Fabricate(:fee_kind, parent: fee_kind, layer: groups(:adler))
+      expect(stamm_fee_kind).not_to be_restrictable_below_top_layer
+
+      stamm_fee_kind.restricted = true
+      expect(stamm_fee_kind).not_to be_valid
+    end
+  end
+
+  context "not restrictable layer below top layer" do
+    let(:fee_kind) { fee_kinds(:baden_wuerttemberg_kind) }
+
+    it "is not restrictable by default" do
+      expect(fee_kind).not_to be_restrictable_below_top_layer
+    end
+
+    it "validates absence of restricted true" do
+      fee_kind.restricted = true
+      expect(fee_kind).not_to be_valid
+    end
+  end
+
   context "#root" do
     let(:group_bawue) { groups(:baden_wuerttemberg) }
     let(:root) { fee_kinds(:top_fee_kind) }

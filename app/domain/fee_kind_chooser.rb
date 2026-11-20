@@ -95,13 +95,16 @@ class FeeKindChooser
     fee_kinds.join(root_alias).on(join_condition).join_sources
   end
 
-  # Filters out restricted fee_kinds by joining to root and checking restricted flag
+  # Filters out restricted fee_kinds: those which are restricted themselves or have a
+  # restricted ancestor (see FeeKind#restricted?). Uses the nested set lft/rgt columns.
   def filter_restricted(relation)
-    root_for_restricted = FeeKind.arel_table.alias("root_for_restricted")
-
-    # Join to root fee_kinds and filter where root.restricted is false or NULL
-    relation.joins(join_to_root_fee_kinds(root_for_restricted))
-      .where(root_for_restricted[:restricted].eq(false)          # WHERE root.restricted = false
-      .or(root_for_restricted[:restricted].eq(nil)))             # OR root.restricted IS NULL
+    relation.where(<<~SQL.squish)
+      NOT EXISTS (
+        SELECT 1 FROM fee_kinds restricted_ancestors
+        WHERE restricted_ancestors.lft <= fee_kinds.lft
+          AND restricted_ancestors.rgt >= fee_kinds.rgt
+          AND restricted_ancestors.restricted = TRUE
+      )
+    SQL
   end
 end
