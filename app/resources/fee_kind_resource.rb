@@ -15,7 +15,10 @@ class FeeKindResource < ApplicationResource
   attribute :layer_id, :integer
   attribute :parent_id, :integer
   attribute :role_type, :string
-  attribute :restricted, :boolean
+  # Effective value: restricted itself or by any ancestor (FeeKind#restricted?)
+  attribute :restricted, :boolean, filterable: false, sortable: false do
+    @object.restricted?
+  end
 
   belongs_to :layer, resource: GroupResource
   belongs_to :parent, resource: FeeKindResource
