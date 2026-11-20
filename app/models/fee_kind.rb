@@ -25,7 +25,6 @@ class FeeKind < ActiveRecord::Base
   validates :parent, inclusion: {in: ->(fee_kind) {
     fee_kind.possible_fee_kind_parents
   }}, on: :create, unless: :top_layer?
-  before_validation :normalize_restricted
   validate :validate_restricted
 
   # Used for ability, we don't want to override the methods that check group permissions
@@ -68,13 +67,10 @@ class FeeKind < ActiveRecord::Base
     FeeKindChooser.new(allow_restricted: true).possible_parents(layer)
   end
 
-  # Whether restricted may be set on this fee kind although it is below the top
-  # layer. Enabled per group type with Group.fee_kind_restrictable.
-  def restrictable_below_top_layer?
-    !top_layer? && layer.present? && layer.class.fee_kind_restrictable
+  def restrictable?
+    layer.present? && layer.class.fee_kind_restrictable
   end
 
-  # A fee kind is restricted if it or any of its ancestors is restricted.
   def restricted?
     restricted == true || parent&.restricted? || false
   end
@@ -177,16 +173,8 @@ class FeeKind < ActiveRecord::Base
   def validate_restricted
     if top_layer?
       errors.add(:restricted, :blank) if restricted.nil?
-    elsif restrictable_below_top_layer?
-      errors.add(:restricted, :inclusion) unless restricted.nil? || restricted == true
-    else
+    elsif !restrictable?
       errors.add(:restricted, :present) unless restricted.nil?
     end
-  end
-
-  # Below the top layer, restricted is either true or nil (inherited). An
-  # unchecked checkbox in the form submits false, which means inherited here.
-  def normalize_restricted
-    self.restricted = nil if restricted == false && restrictable_below_top_layer?
   end
 end

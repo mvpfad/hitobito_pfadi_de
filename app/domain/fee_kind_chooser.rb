@@ -95,16 +95,16 @@ class FeeKindChooser
     fee_kinds.join(root_alias).on(join_condition).join_sources
   end
 
-  # Filters out restricted fee_kinds: those which are restricted themselves or have a
-  # restricted ancestor (see FeeKind#restricted?). Uses the nested set lft/rgt columns.
   def filter_restricted(relation)
-    relation.where(<<~SQL.squish)
-      NOT EXISTS (
-        SELECT 1 FROM fee_kinds restricted_ancestors
-        WHERE restricted_ancestors.lft <= fee_kinds.lft
-          AND restricted_ancestors.rgt >= fee_kinds.rgt
-          AND restricted_ancestors.restricted = TRUE
-      )
-    SQL
+    fee_kinds = FeeKind.arel_table
+    ancestor = fee_kinds.alias("restricted_ancestors")
+
+    restricted_ancestor = Arel::SelectManager.new(ancestor).project(1).where(
+      ancestor[:lft].lteq(fee_kinds[:lft])
+        .and(ancestor[:rgt].gteq(fee_kinds[:rgt]))
+        .and(ancestor[:restricted].eq(true))
+    )
+
+    relation.where(restricted_ancestor.exists.not)
   end
 end

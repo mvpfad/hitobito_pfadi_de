@@ -15,8 +15,6 @@ module PfadiDe::Group
     # self.used_attributes += [:website, :bank_account, :description]
     # self.superior_attributes = [:bank_account]
 
-    # Fee kinds of layers of this type may be restricted themselves, even though
-    # they are below the top layer (FeeKind#restrictable_below_top_layer?).
     class_attribute :fee_kind_restrictable, default: false
 
     has_many :fee_kinds, inverse_of: :layer, dependent: :destroy

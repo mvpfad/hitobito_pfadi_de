@@ -127,22 +127,14 @@ describe FeeKind do
     end
 
     it "is restrictable" do
-      expect(fee_kind).to be_restrictable_below_top_layer
+      expect(fee_kind).to be_restrictable
     end
 
-    it "accepts restricted true" do
-      fee_kind.restricted = true
-      expect(fee_kind).to be_valid
-    end
-
-    it "accepts restricted nil" do
-      fee_kind.restricted = nil
-      expect(fee_kind).to be_valid
-    end
-
-    it "normalizes restricted false to nil" do
-      fee_kind.update!(restricted: false)
-      expect(fee_kind.reload.restricted).to be_nil
+    it "accepts restricted true, false and nil" do
+      [true, false, nil].each do |value|
+        fee_kind.restricted = value
+        expect(fee_kind).to be_valid
+      end
     end
 
     it "still validates absence of role_type" do
@@ -166,7 +158,7 @@ describe FeeKind do
 
     it "does not allow restricted on layers of other types" do
       stamm_fee_kind = Fabricate(:fee_kind, parent: fee_kind, layer: groups(:adler))
-      expect(stamm_fee_kind).not_to be_restrictable_below_top_layer
+      expect(stamm_fee_kind).not_to be_restrictable
 
       stamm_fee_kind.restricted = true
       expect(stamm_fee_kind).not_to be_valid
@@ -177,7 +169,11 @@ describe FeeKind do
     let(:fee_kind) { fee_kinds(:baden_wuerttemberg_kind) }
 
     it "is not restrictable by default" do
-      expect(fee_kind).not_to be_restrictable_below_top_layer
+      expect(fee_kind).not_to be_restrictable
+    end
+
+    it "is restrictable on the top layer" do
+      expect(fee_kinds(:top_fee_kind)).to be_restrictable
     end
 
     it "validates absence of restricted true" do
