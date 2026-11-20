@@ -171,10 +171,6 @@ class FeeKind < ActiveRecord::Base
   end
 
   def validate_restricted
-    if top_layer?
-      errors.add(:restricted, :blank) if restricted.nil?
-    elsif !restrictable?
-      errors.add(:restricted, :present) unless restricted.nil?
-    end
+    errors.add(:restricted, :present) unless restricted.nil? || restrictable?
   end
 end

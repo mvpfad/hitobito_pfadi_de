@@ -62,9 +62,10 @@ describe FeeKind do
       expect(fee_kind).not_to be_valid
     end
 
-    it "validates presence of restricted" do
+    it "accepts restricted nil" do
       fee_kind.restricted = nil
-      expect(fee_kind).not_to be_valid
+      expect(fee_kind).to be_valid
+      expect(fee_kind.restricted?).to be false
     end
 
     it "cannot change role_type after create" do
